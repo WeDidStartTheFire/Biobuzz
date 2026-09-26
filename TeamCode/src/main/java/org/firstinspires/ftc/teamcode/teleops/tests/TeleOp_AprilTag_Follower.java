@@ -49,8 +49,6 @@ public class TeleOp_AprilTag_Follower extends OpMode {
     public void loop() {
         teleop.drivetrainLogic(validStartPose);
         teleop.updateIntake();
-        teleop.feederLogic();
-        teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
         if (robot.limelight.getFiducials() != null) {
             for (LLResultTypes.FiducialResult fiducial : robot.limelight.getFiducials()) {

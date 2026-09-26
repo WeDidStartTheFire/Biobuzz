@@ -1,19 +1,10 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.constants.IntakeControllerConstants.INDEXER_ARTIFACT_DETECTION_WAIT;
-import static org.firstinspires.ftc.teamcode.constants.IntakeControllerConstants.PARTIAL_INDEXER_ARTIFACT_DETECTION_WAIT;
-import static org.firstinspires.ftc.teamcode.enums.Artifact.EMPTY;
-import static org.firstinspires.ftc.teamcode.enums.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.enums.LEDColors.AZURE;
-import static org.firstinspires.ftc.teamcode.enums.LEDColors.BLUE;
-import static org.firstinspires.ftc.teamcode.enums.LEDColors.GREEN;
-
 import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 
 public class IntakeController {
 
@@ -22,7 +13,6 @@ public class IntakeController {
 
     private boolean isBusy;
     private final Robot robot;
-    private final Timer artifactDetectedTimer = new Timer();
     private final TelemetryUtils tm;
 
     private enum State {
@@ -50,12 +40,6 @@ public class IntakeController {
      * @see #stop()
      */
     public void update() {
-        if (robot.indexer.getTotalArtifacts() == 3)
-            robot.led.setColor(GREEN, isBusy ? LED.Priority.HIGH : LED.Priority.MEDIUM);
-        else if (robot.indexer.getTotalArtifacts() == 2)
-            robot.led.setColor(AZURE, isBusy ? LED.Priority.MEDIUM : LED.Priority.LOW);
-        else if (robot.indexer.getTotalArtifacts() <= 1)
-            robot.led.setColor(BLUE, LED.Priority.LOW);
         switch (state) {
             case IDLE:
                 RobotState.normalIntaking = false;
@@ -69,25 +53,9 @@ public class IntakeController {
                 robot.intake.powerOutside(0);
                 break;
             case MANUAL_INTAKE:
-                RobotState.normalIntaking = true;
-                robot.intake.power(-1);
-                break;
             case INTAKE:
                 RobotState.normalIntaking = true;
                 robot.intake.power(-1);
-                if (!robot.indexer.isStill()) {
-                    robot.intake.powerInside(1);
-                    robot.intake.powerOutside(0);
-                }
-                if (robot.indexer.isActiveSlotEmpty()) {
-                    artifactDetectedTimer.resetTimer();
-                } else if (artifactDetectedTimer.getElapsedTimeSeconds() > INDEXER_ARTIFACT_DETECTION_WAIT) {
-                    robot.intake.powerOutside(.5);
-                    if (!robot.indexer.rotateToArtifact(EMPTY))
-                        robot.indexer.rotateToArtifact(UNKNOWN);
-                } else if (artifactDetectedTimer.getElapsedTimeSeconds() > PARTIAL_INDEXER_ARTIFACT_DETECTION_WAIT) {
-                    robot.intake.powerOutside(0);
-                }
                 break;
             case OUTTAKE:
                 RobotState.normalIntaking = false;
@@ -97,7 +65,7 @@ public class IntakeController {
     }
 
     /**
-     * @return Whether the robot is actively intaking artifacts
+     * @return Whether the robot is actively intaking
      */
     public boolean isBusy() {
         return isBusy;

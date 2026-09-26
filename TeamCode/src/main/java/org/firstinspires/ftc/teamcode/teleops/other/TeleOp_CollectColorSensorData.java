@@ -129,10 +129,7 @@ public class TeleOp_CollectColorSensorData extends OpMode {
                 distanceB));
         }
         teleop.drivetrainLogic(validStartPose);
-        teleop.indexerUpdate();
         teleop.updateIntake();
-        teleop.feederLogic();
-        teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
         teleop.update();
     }

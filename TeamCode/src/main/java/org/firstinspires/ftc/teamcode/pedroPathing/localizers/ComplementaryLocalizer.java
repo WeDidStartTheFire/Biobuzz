@@ -119,9 +119,9 @@ public class ComplementaryLocalizer implements Localizer {
         }
         if (LLPose != null) {
             if (invalidPose) {
-                invalidPose = false;
                 Pose3D botpose = result.getBotpose();
                 if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) && hypot(vel.getX(), vel.getY()) < 7) {
+                    invalidPose = false;
                     double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
                     if (angle < 0) angle += 360;
                     LLPose = new Pose(botpose.getPosition().y / 0.0254 + 72,

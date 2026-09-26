@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LIMELIGHT;
+
 import androidx.annotation.Nullable;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -8,9 +10,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.enums.HivePosition;
-import org.firstinspires.ftc.teamcode.enums.Motif;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class Limelight {
     private final @Nullable Limelight3A limelight;
 
     public Limelight(HardwareMap hardwareMap, TelemetryUtils tm) {
-        limelight = HardwareInitializer.init(hardwareMap, tm, Hardware.LIMELIGHT);
+        limelight = HardwareInitializer.init(hardwareMap, tm, LIMELIGHT);
         if (limelight != null) limelight.pipelineSwitch(0);
     }
 
@@ -36,35 +36,6 @@ public class Limelight {
      */
     public void stop() {
         if (limelight != null) limelight.stop();
-    }
-
-    /**
-     * Gets the detected motif
-     *
-     * @return Detected motif. If it doesn't detect a valid ID or multiple motif IDs, will return
-     * Motif.UNKNOWN.
-     */
-    public Motif getMotif() {
-        List<LLResultTypes.FiducialResult> fiducials = getFiducials();
-        if (fiducials == null) return Motif.UNKNOWN;
-        Motif motif = Motif.UNKNOWN;
-        for (LLResultTypes.FiducialResult fiducial : fiducials) {
-            switch (fiducial.getFiducialId()) {
-                case 21:
-                    if (motif == Motif.UNKNOWN) motif = Motif.GPP;
-                    else return Motif.UNKNOWN;
-                    break;
-                case 22:
-                    if (motif == Motif.UNKNOWN) motif = Motif.PGP;
-                    else return Motif.UNKNOWN;
-                    break;
-                case 23:
-                    if (motif == Motif.UNKNOWN) motif = Motif.PPG;
-                    else return Motif.UNKNOWN;
-                    break;
-            }
-        }
-        return motif;
     }
 
     /**

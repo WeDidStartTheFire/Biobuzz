@@ -7,6 +7,7 @@ import static java.lang.Thread.sleep;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Test Bus Speed", group = "Test")
+@Disabled
 @Configurable
 public class TeleOp_TestBusSpeed extends OpMode {
     private Robot robot;

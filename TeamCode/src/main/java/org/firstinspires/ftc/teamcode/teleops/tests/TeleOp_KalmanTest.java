@@ -55,13 +55,9 @@ public class TeleOp_KalmanTest extends OpMode {
     @Override
     public void loop() {
         teleop.drivetrainLogic(validStartPose);
-        teleop.indexerUpdate();
         teleop.updateIntake();
-        teleop.feederLogic();
-        teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
         LLResult result = robot.limelight.getLatestResult();
-        tm.print("Motif", robot.limelight.getMotif());
         if (result != null) {
             tm.print("LL Pose MT1", result.getBotpose());
             tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0]);

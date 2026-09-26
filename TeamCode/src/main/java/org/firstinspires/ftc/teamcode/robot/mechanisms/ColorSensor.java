@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.enums.Artifact.EMPTY;
-import static org.firstinspires.ftc.teamcode.enums.Artifact.GREEN;
-import static org.firstinspires.ftc.teamcode.enums.Artifact.PURPLE;
-import static org.firstinspires.ftc.teamcode.enums.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_B;
 
@@ -17,7 +13,6 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.enums.Artifact;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.opencv.core.Scalar;
 
@@ -25,12 +20,9 @@ public class ColorSensor {
 
     private final @Nullable RevColorSensorV3 colorSensorA, colorSensorB;
     private @Nullable Scalar colorA, colorB;
-    private @NonNull Artifact color = UNKNOWN;
-    private final TelemetryUtils tm;
-    private boolean aLast, lastSkipped = true;
+    private boolean aLast;
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
-        this.tm = tm;
         colorSensorA = HardwareInitializer.init(hardwareMap, tm, COLOR_SENSOR_A);
         colorSensorB = HardwareInitializer.init(hardwareMap, tm, COLOR_SENSOR_B);
         setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
@@ -54,8 +46,8 @@ public class ColorSensor {
      * @return The normalized RGB values, Scalar(R, G, B)
      */
     public Scalar getRGB(boolean bothSensors) {
-        colorA = lastSkipped || bothSensors || !aLast ? getRGB_A() : colorA;
-        colorB = lastSkipped || bothSensors || aLast ? getRGB_B() : colorB;
+        colorA = bothSensors || !aLast ? getRGB_A() : colorA;
+        colorB = bothSensors || aLast ? getRGB_B() : colorB;
         aLast = !aLast;
         if (colorA != null && colorB != null)
             return new Scalar((colorA.val[0] + colorB.val[0]) / 2, (colorA.val[1] + colorB.val[1]) / 2, (colorA.val[2] + colorB.val[2]) / 2);
@@ -95,14 +87,6 @@ public class ColorSensor {
     }
 
     /**
-     * Reads the two color sensors and stores the detected color
-     */
-    public void update(boolean bothSensors) {
-        color = getColor(bothSensors);
-        lastSkipped = false;
-    }
-
-    /**
      * Gets the distance reading from color sensor A
      *
      * @return Distance (double) or -1 if the color sensor is disconnected
@@ -118,35 +102,5 @@ public class ColorSensor {
      */
     public double getInchesB() {
         return colorSensorB == null ? -1 : colorSensorB.getDistance(DistanceUnit.INCH);
-    }
-
-    /**
-     * Gets the detected color of the artifact
-     *
-     * @return The detected color
-     */
-    public Artifact getColor(boolean bothSensors) {
-        Scalar color = getRGB(bothSensors);
-        if (color == null) return UNKNOWN;
-        double g = color.val[1];
-        if (g < 1e-6) return UNKNOWN;
-        double ratio = (color.val[0] + color.val[2]) / g;
-        tm.print("Ratio", ratio);
-        if (ratio < 1.390) return GREEN;
-        if (ratio < 1.57) return EMPTY;
-        return PURPLE;
-    }
-
-    /**
-     * Gets the artifact detected by the sensor
-     *
-     * @return The artifact color. Returns UNKNOWN if sensor is disconnected.
-     */
-    public Artifact getArtifact() {
-        return color;
-    }
-
-    public void skipLoop() {
-        lastSkipped = true;
     }
 }

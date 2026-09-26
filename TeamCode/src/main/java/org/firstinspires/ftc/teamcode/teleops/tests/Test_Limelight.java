@@ -42,7 +42,6 @@ public class Test_Limelight extends OpMode {
     public void init_loop() {
         teleop.update();
         if (pose != null) tm.print(pose);
-        tm.print("Motif", robot.limelight.getMotif());
     }
 
     @Override
@@ -54,11 +53,8 @@ public class Test_Limelight extends OpMode {
     public void loop() {
         teleop.drivetrainLogic(validStartPose);
         teleop.updateIntake();
-        teleop.feederLogic();
-        teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
         LLResult result = robot.limelight.getLatestResult();
-        tm.print("Motif", robot.limelight.getMotif());
         if (result != null) {
             tm.print("LL Pose MT1", result.getBotpose());
             tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0]);

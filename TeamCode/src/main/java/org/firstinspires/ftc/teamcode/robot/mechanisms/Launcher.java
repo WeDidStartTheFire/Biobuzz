@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
@@ -10,7 +9,6 @@ import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherP
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherReversePIDF;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_B;
-import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +24,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
+import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
@@ -67,7 +66,7 @@ public class Launcher {
             launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         spinningTimer = new Timer();
-        launcherVelModifier = 0;
+        RobotState.launcherVelModifier = 0;
     }
 
     /**
@@ -88,12 +87,12 @@ public class Launcher {
     public double getGoalVel(@Nullable Pose pose, @Nullable Vector vel) {
         if (pose == null) return 0;
         if (pose.equals(lastPose) && ((vel == null && lastVel == null) || vel != null && vel.equals(lastVel)))
-            return lastGoalVel + launcherVelModifier;
+            return lastGoalVel + RobotState.launcherVelModifier;
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose, vel);
         lastPose = pose;
         lastVel = vel;
         lastGoalVel = sol != null ? ballVelToMotorVel(sol.w) : 0;
-        return lastGoalVel + launcherVelModifier;
+        return lastGoalVel + RobotState.launcherVelModifier;
     }
 
     /**
@@ -145,22 +144,6 @@ public class Launcher {
     public boolean almostToSpeed(double vel) {
         if (launcherMotorA == null || launcherMotorB == null) return false;
         return vel >= getGoalVel() - 100;
-    }
-
-    /**
-     * Spins the launch motors inward to intake artifacts
-     *
-     * @param percent Power on [0, 1] to power the launch motors
-     */
-    public void intakeMotors(double percent) {
-        if (launcherMotorA != null) launcherMotorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if (launcherMotorB != null) launcherMotorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        percent = Math.max(0, Math.min(1, percent));
-        if (!spinning && abs(cachedPower + percent * .4) <= .005) return;
-        spinning = false;
-        cachedPower = -percent * .4;
-        if (launcherMotorA != null) launcherMotorA.setPower(-percent * .4);
-        if (launcherMotorB != null) launcherMotorB.setPower(-percent * .4);
     }
 
     /**

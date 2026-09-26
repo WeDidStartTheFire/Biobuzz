@@ -8,6 +8,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 @TeleOp(name = "Tune Turret PIDF", group = "D")
 @Configurable
+@Disabled
 public class TeleOp_TuneTurretPIDF extends OpMode {
 
     @IgnoreConfigurable
